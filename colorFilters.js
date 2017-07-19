@@ -21,7 +21,6 @@ ImageFilters.pixelateImage = function pixelateImage(canvas) {
 
 ImageFilters.applyFilter = function applyFilter(filter, amount) {
   this.fraction = amount === undefined ? 1 : amount;
-  console.log(this.fraction);
   return filter.call(this);
 };
 
