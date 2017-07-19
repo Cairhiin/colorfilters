@@ -1,4 +1,14 @@
-let ImageFilters = Object.create(null);
+const ImageFilters = Object.create(null);
+
+function truncateValue(value) {
+  let returnValue = value;
+  if (value < 0) {
+    returnValue = 0;
+  } else if (value > 255) {
+    returnValue = 255;
+  }
+  return returnValue;
+}
 
 ImageFilters.pixelateImage = function pixelateImage(canvas) {
   this.canvas = canvas;
@@ -7,7 +17,7 @@ ImageFilters.pixelateImage = function pixelateImage(canvas) {
 };
 
 ImageFilters.applyFilter = function applyFilter(filter, amount) {
-  this.mutator = amount === undefined ? 100 : Number(amount);
+  this.mutator = Number(amount) === undefined ? 100 : Number(amount);
   return filter.call(this);
 };
 
@@ -31,7 +41,7 @@ ImageFilters.sepia = function sepia() {
   return this.canvas.toDataURL();
 };
 
-ImageFilters.grayScale = function grayscale() {
+ImageFilters.grayScale = function grayScale() {
   let avg;
   this.mutator /= 100;
   for (let i = 0; i < this.imgData.data.length; i += 4) {
@@ -59,27 +69,16 @@ ImageFilters.inverse = function inverse() {
 
 ImageFilters.lightBalance = function lightBalance() {
   for (let i = 0; i < this.imgData.data.length; i += 4) {
-    this.imgData.data[i] = Math.min(255, this.imgData.data[i] + this.mutator);
-    this.imgData.data[i + 1] = Math.min(255, this.imgData.data[i + 1] + this.mutator);
-    this.imgData.data[i + 2] = Math.min(255, this.imgData.data[i + 2] + this.mutator);
+    this.imgData.data[i] = truncateValue(this.imgData.data[i] + this.mutator);
+    this.imgData.data[i + 1] = truncateValue(this.imgData.data[i + 1] + this.mutator);
+    this.imgData.data[i + 2] = truncateValue(this.imgData.data[i + 2] + this.mutator);
   }
   this.cx.putImageData(this.imgData, 0, 0);
   return this.canvas.toDataURL();
 };
 
-function truncateValue(value) {
-  let returnValue = value;
-  if (value < 0) {
-    returnValue = 0;
-  } else if (value > 255) {
-    returnValue = 255;
-  }
-  return returnValue;
-}
-
 ImageFilters.saturation = function saturation() {
   const contrastFactor = (259 * (this.mutator + 255)) / (255 * (259 - this.mutator));
-  console.log(contrastFactor);
   for (let i = 0; i < this.imgData.data.length; i += 4) {
     this.imgData.data[i] =
           truncateValue((contrastFactor * (this.imgData.data[i] - 128)) + 128);
@@ -90,7 +89,7 @@ ImageFilters.saturation = function saturation() {
   }
   this.cx.putImageData(this.imgData, 0, 0);
   return this.canvas.toDataURL();
-}
+};
 
 function loadImageURL(canvas, url) {
   let image = document.createElement('img');
