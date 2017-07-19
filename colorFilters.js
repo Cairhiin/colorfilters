@@ -79,10 +79,9 @@ input.addEventListener('change', function() {
 button.addEventListener('click', function() {
   let image = document.querySelector('img');
   let percentage = document.querySelectorAll('input')[1];
-  percentage = percentage.value / 100;
+  percentage = (percentage.value || 100) / 100;
   image.src = '';
   ImageFilters.pixelateImage(canvas);
   image.src = ImageFilters.applyFilter(ImageFilters.grayScale, percentage);
   canvas.style.display = 'none';
-  percentage = (percentage.value || 100) / 100;
 });
